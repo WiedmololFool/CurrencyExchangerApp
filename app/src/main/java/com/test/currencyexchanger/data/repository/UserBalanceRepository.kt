@@ -5,7 +5,6 @@ import com.test.currencyexchanger.data.remote.CurrencyDataSource
 import com.test.currencyexchanger.domain.model.Balance
 import com.test.currencyexchanger.domain.model.Currency
 import com.test.currencyexchanger.domain.model.UserProfile
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +24,6 @@ class UserBalanceRepository(
             commissionFee = 0.00
         )
     )
-
 
     private suspend fun fetchAllCurrencies(): List<Currency> {
         return currencyDataSource.getAllCurrencies()
@@ -47,7 +45,6 @@ class UserBalanceRepository(
             currencyExchangesNumber = 0,
             commissionFee = 0.00
         )
-        println("MY_TAG Creating start user profile: $newUserProfile")
         userProfileStorage.save(newUserProfile)
     }
 
@@ -56,31 +53,13 @@ class UserBalanceRepository(
         localUserProfile: UserProfile,
         actualCurrencies: List<Currency>
     ): UserProfile {
-        val localCurrencies = localUserProfile.balances.map { balance ->
-            balance.currency
-        }
-        if (localCurrencies == actualCurrencies) {
-            return localUserProfile
-        } else {
-//            val updatedBalances = localUserProfile.balances.map { balance ->
-//                Balance(
-//                    currency =
-//                )
-//            }
-            when {
-                localCurrencies.size < actualCurrencies.size ->{
-                    println("localCurrencies.size < actualCurrencies.size")
-                }
-                localCurrencies.size > actualCurrencies.size ->{
-                    println("localCurrencies.size > actualCurrencies.size")
-                }
-                else -> {
-                    println("localCurrencies.size = actualCurrencies.size")
-                }
+        val updatedBalances = actualCurrencies.map { actualCurrency ->
+            val localBalance = localUserProfile.balances.find {
+                it.currency.name == actualCurrency.name
             }
-            //TODO change return result
-            return localUserProfile.copy()
+            localBalance ?: Balance(currency = actualCurrency, value = 0.0)
         }
+        return localUserProfile.copy(balances = updatedBalances)
     }
 
     suspend fun loadUserProfile(): StateFlow<UserProfile> {
@@ -91,16 +70,20 @@ class UserBalanceRepository(
                 createStartUserProfile(actualCurrencies)
                 userProfile.value = userProfileStorage.get()
             } else {
-
                 userProfile.value = checkForCurrenciesUpdate(
                     localUserProfile = localUserProfile,
                     actualCurrencies = actualCurrencies
                 )
             }
+            return userProfile.asStateFlow()
         } catch (e: Exception) {
             e.printStackTrace()
+            throw(e)
         }
-        return userProfile.asStateFlow()
+    }
+
+    private fun updateUserBalance(){
+        //TODO
     }
 
 

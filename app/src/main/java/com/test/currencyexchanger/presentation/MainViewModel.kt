@@ -5,13 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.test.currencyexchanger.data.repository.UserBalanceRepository
 import com.test.currencyexchanger.domain.usecase.GetAllCurrenciesUseCase
+import com.test.currencyexchanger.domain.usecase.LoadUserProfileUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel(
 //    private val getAllCurrenciesUseCase: GetAllCurrenciesUseCase
-    private val userBalanceRepository: UserBalanceRepository
+    private val loadUserProfileUseCase: LoadUserProfileUseCase
 ) : ViewModel() {
 
 
@@ -41,8 +43,12 @@ class MainViewModel(
 
     fun loadUserProfile(){
         viewModelScope.launch {
-            userBalanceRepository.loadUserProfile().collect{ userProfile ->
-                println("MY_TAG, $userProfile")
+          loadUserProfileUseCase.execute(LoadUserProfileUseCase.Param()){
+              onSuccess = {
+                  it.collect{
+
+                  }
+              }
             }
         }
     }

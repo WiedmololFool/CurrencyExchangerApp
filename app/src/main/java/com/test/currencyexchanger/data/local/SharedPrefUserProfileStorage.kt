@@ -24,8 +24,8 @@ class SharedPrefUserProfileStorage(context: Context) : UserProfileStorage {
                 .apply()
             sharedPreferences.edit()
                 .putFloat(
-                    KEY_USER_CURRENCY_EXCHANGES_NUMBER,
-                    userProfile.currencyExchangesNumber.toFloat()
+                    KEY_COMMISSION_FEE,
+                    userProfile.commissionFee.toFloat()
                 )
                 .apply()
         }
