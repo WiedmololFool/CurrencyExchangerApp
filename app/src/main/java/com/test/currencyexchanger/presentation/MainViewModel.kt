@@ -6,6 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.test.currencyexchanger.domain.model.Balance
+import com.test.currencyexchanger.domain.model.Currency
+import com.test.currencyexchanger.domain.model.ExchangeInput
 import com.test.currencyexchanger.domain.usecase.ConvertCurrencyUseCase
 import com.test.currencyexchanger.domain.usecase.GetUserProfileUseCase
 import com.test.currencyexchanger.domain.usecase.LoadUserProfileUseCase
@@ -21,6 +23,13 @@ class MainViewModel(
 
     var viewState by mutableStateOf(value = MainViewState())
         private set
+
+    fun updateInput(input: ExchangeInput) {
+        viewModelScope.launch {
+            viewState = viewState.copy(input = input)
+            convertCurrency()
+        }
+    }
 
     fun loadUserProfile() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -51,14 +60,14 @@ class MainViewModel(
                             userProfile.balances.first { it.currency.symbol == "EUR" }
                         } ${userProfile.commissionFee} ${userProfile.currencyExchangesNumber}"
                     )
-                    val soughtBalance =
-                        userProfile.balances.first { it.currency.symbol == "EUR" }
-                            .copy(value = 100.0)
-                    val boughtBalance =
-                        userProfile.balances.first { it.currency.symbol == "USD" }
-                    mockUserBalances(
-                        soughtBalance = soughtBalance,
-                        boughtBalance = boughtBalance
+                    val soughtCurrency =
+                        userProfile.balances.first { it.currency.symbol == "EUR" }.currency
+                    val boughtCurrency =
+                        userProfile.balances.first { it.currency.symbol == "USD" }.currency
+                    createExchangeInput(
+                        amount = 100.0,
+                        soughtCurrency = soughtCurrency,
+                        boughtCurrency = boughtCurrency
                     )
                     convertCurrency()
                 }
@@ -70,29 +79,38 @@ class MainViewModel(
             with(viewState) {
                 convertCurrencyUseCase.execute(
                     ConvertCurrencyUseCase.Param(
-                        amount = soughtBalance.value,
-                        from = soughtBalance.currency,
-                        to = boughtBalance.currency
+                        amount = input.amount ?: 0.0,
+                        from = input.soughtCurrency ?: Currency("", ""),
+                        to = input.boughtCurrency ?: Currency("", "")
                     )
                 ) {
                     onStart = {
-                        viewState = viewState.copy(showProgress = true)
+//                        viewState = viewState.copy(showProgress = true)
                     }
                     onSuccess = { convertedBalance ->
-                       viewState = viewState.copy(boughtBalance = convertedBalance)
+                        viewState = viewState.copy(convertedInputValue = convertedBalance.value)
                     }
                     onError = { error ->
                         viewState = viewState.copy(error = error)
                     }
                     onTerminate = {
-                        viewState = viewState.copy(showProgress = false)
+//                        viewState = viewState.copy(showProgress = false)
                     }
                 }
             }
         }
     }
 
-    private fun mockUserBalances(soughtBalance: Balance, boughtBalance: Balance) {
-        viewState = viewState.copy(soughtBalance = soughtBalance, boughtBalance = boughtBalance)
+    private fun createExchangeInput(
+        amount: Double,
+        soughtCurrency: Currency,
+        boughtCurrency: Currency
+    ) {
+        viewState = viewState.copy(
+            input = ExchangeInput(
+                soughtCurrency = soughtCurrency,
+                boughtCurrency = boughtCurrency
+            )
+        )
     }
 }

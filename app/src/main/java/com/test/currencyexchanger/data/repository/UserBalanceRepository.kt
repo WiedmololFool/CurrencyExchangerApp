@@ -83,17 +83,17 @@ class UserBalanceRepository(
         return userProfile.asStateFlow()
     }
 
-    private suspend fun convertCurrency(
-        amount: Double,
-        from: Currency,
-        to: Currency
-    ): Balance {
-        return currencyDataSource.convertCurrency(
-            amount = amount,
-            from = from,
-            to = to
-        )
-    }
+//    private suspend fun convertCurrency(
+//        amount: Double,
+//        from: Currency,
+//        to: Currency
+//    ): Balance {
+//        return currencyDataSource.convertCurrency(
+//            amount = amount,
+//            from = from,
+//            to = to
+//        )
+//    }
 
 
 }
