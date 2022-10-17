@@ -7,7 +7,11 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 
 val viewModelModule = module {
 
-   viewModel {
-      MainViewModel(userBalanceRepository = get())
-   }
+    viewModel {
+        MainViewModel(
+            loadUserProfileUseCase = get(),
+            getUserProfileUseCase = get(),
+            convertCurrencyUseCase = get()
+        )
+    }
 }

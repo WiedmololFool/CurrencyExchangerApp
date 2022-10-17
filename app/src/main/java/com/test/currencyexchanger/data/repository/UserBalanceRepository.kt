@@ -14,14 +14,11 @@ class UserBalanceRepository(
     private val currencyDataSource: CurrencyDataSource
 ) {
 
-    private val _userBalance = MutableStateFlow(listOf<Balance>())
-    val userBalance = _userBalance.asStateFlow()
-
     private val userProfile = MutableStateFlow(
         UserProfile(
             balances = listOf(),
             currencyExchangesNumber = 0,
-            commissionFee = 0.00
+            commissionFee = 0.0
         )
     )
 
@@ -33,7 +30,7 @@ class UserBalanceRepository(
         val result = actualCurrencies.map { currency ->
             Balance(
                 currency = currency,
-                value = if (currency.symbol == "EUR") 1000.00 else 0.00
+                value = if (currency.symbol == "EUR") 1000.0 else 0.0
             )
         }
         return result
@@ -62,7 +59,7 @@ class UserBalanceRepository(
         return localUserProfile.copy(balances = updatedBalances)
     }
 
-    suspend fun loadUserProfile(): StateFlow<UserProfile> {
+    suspend fun loadUserProfile(): Boolean {
         try {
             val localUserProfile = userProfileStorage.get()
             val actualCurrencies = fetchAllCurrencies()
@@ -75,15 +72,27 @@ class UserBalanceRepository(
                     actualCurrencies = actualCurrencies
                 )
             }
-            return userProfile.asStateFlow()
+            return true
         } catch (e: Exception) {
             e.printStackTrace()
             throw(e)
         }
     }
 
-    private fun updateUserBalance(){
-        //TODO
+    fun getUserProfile(): StateFlow<UserProfile> {
+        return userProfile.asStateFlow()
+    }
+
+    private suspend fun convertCurrency(
+        amount: Double,
+        from: Currency,
+        to: Currency
+    ): Balance {
+        return currencyDataSource.convertCurrency(
+            amount = amount,
+            from = from,
+            to = to
+        )
     }
 
 
