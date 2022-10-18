@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToInt
 
 /**
  * Utility classes for doing stuffs such as hiding keyboard, checking if network is available etc
@@ -73,6 +74,14 @@ object Utility {
 
     fun log(message: String) {
         Log.e("MY_TAG", message)
+    }
+
+    fun String.isNumeric(): Boolean {
+        return this.toDoubleOrNull() != null
+    }
+
+    fun Double.round(): Double {
+        return ((this * 100.0).roundToInt() / 100.0)
     }
 
 }

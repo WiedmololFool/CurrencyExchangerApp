@@ -12,6 +12,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 val dataModule = module {
     factory {
@@ -28,6 +29,8 @@ val dataModule = module {
                     .build()
                 chain.proceed(request)
             }
+            .connectTimeout(120, TimeUnit.SECONDS)
+            .readTimeout(120, TimeUnit.SECONDS)
             .build()
 
         Retrofit.Builder()

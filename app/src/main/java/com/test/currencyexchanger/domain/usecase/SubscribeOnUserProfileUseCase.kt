@@ -4,15 +4,14 @@ import com.test.currencyexchanger.core.ErrorHandler
 import com.test.currencyexchanger.core.usecase.FlowUseCase
 import com.test.currencyexchanger.data.repository.UserBalanceRepository
 import com.test.currencyexchanger.domain.model.UserProfile
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.coroutines.CoroutineContext
 
-class GetUserProfileUseCase(
+class SubscribeOnUserProfileUseCase(
     coroutineContext: CoroutineContext,
     errorHandler: ErrorHandler,
     private val repository: UserBalanceRepository,
-) : FlowUseCase<GetUserProfileUseCase.Param, UserProfile>(
+) : FlowUseCase<SubscribeOnUserProfileUseCase.Param, UserProfile>(
     coroutineContext = coroutineContext,
     errorHandler = errorHandler
 ) {

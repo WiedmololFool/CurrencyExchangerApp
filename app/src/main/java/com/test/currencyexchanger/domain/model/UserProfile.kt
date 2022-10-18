@@ -2,6 +2,6 @@ package com.test.currencyexchanger.domain.model
 
 data class UserProfile(
     val balances: List<Balance>,
-    val currencyExchangesNumber: Int,
+    var currencyExchangesNumber: Int,
     val commissionFee: Double
 )

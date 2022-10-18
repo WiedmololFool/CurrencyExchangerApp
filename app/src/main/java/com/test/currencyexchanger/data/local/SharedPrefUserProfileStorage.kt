@@ -15,14 +15,15 @@ class SharedPrefUserProfileStorage(context: Context) : UserProfileStorage {
     override fun save(userProfile: UserProfile): Boolean {
         with(SharedPrefConstants) {
             val convertedUserBalances = Gson().toJson(userProfile.balances)
-            sharedPreferences.edit().putString(KEY_USER_BALANCES, convertedUserBalances).apply()
             sharedPreferences.edit()
+                .putString(
+                    KEY_USER_BALANCES,
+                    convertedUserBalances
+                )
                 .putInt(
                     KEY_USER_CURRENCY_EXCHANGES_NUMBER,
                     userProfile.currencyExchangesNumber
                 )
-                .apply()
-            sharedPreferences.edit()
                 .putFloat(
                     KEY_COMMISSION_FEE,
                     userProfile.commissionFee.toFloat()

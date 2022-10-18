@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">CurrencyExchanger</string>
+    <string name="close">Close</string>
+    <string name="error">Error</string>
+    <string name="choose_currency">Choose currency</string>
+    <string name="select">Select</string>
+    <string name="enter_value">Enter value</string>
+    <string name="sell">Sell</string>
+    <string name="receive">Receive</string>
+    <string name="submit">Submit</string>
+    <string name="currency_converted">Currency converted</string>
 </resources>

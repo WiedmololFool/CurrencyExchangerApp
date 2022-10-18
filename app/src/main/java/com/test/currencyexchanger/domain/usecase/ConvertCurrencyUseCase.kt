@@ -25,7 +25,7 @@ class ConvertCurrencyUseCase(
     }
 
     data class Param(
-        val amount: Double,
+        val amount: String,
         val from: Currency,
         val to: Currency
     )

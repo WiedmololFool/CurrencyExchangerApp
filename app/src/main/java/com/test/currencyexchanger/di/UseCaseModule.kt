@@ -1,9 +1,6 @@
 package com.test.currencyexchanger.di
 
-import com.test.currencyexchanger.domain.usecase.ConvertCurrencyUseCase
-import com.test.currencyexchanger.domain.usecase.GetAllCurrenciesUseCase
-import com.test.currencyexchanger.domain.usecase.GetUserProfileUseCase
-import com.test.currencyexchanger.domain.usecase.LoadUserProfileUseCase
+import com.test.currencyexchanger.domain.usecase.*
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -24,7 +21,7 @@ val useCaseModule = module {
     }
 
     single {
-        GetUserProfileUseCase(
+        SubscribeOnUserProfileUseCase(
             coroutineContext = get(),
             errorHandler = get(),
             repository = get()
@@ -33,6 +30,14 @@ val useCaseModule = module {
 
     single {
         ConvertCurrencyUseCase(
+            coroutineContext = get(),
+            errorHandler = get(),
+            repository = get()
+        )
+    }
+
+    single {
+        ConvertBalanceUseCase(
             coroutineContext = get(),
             errorHandler = get(),
             repository = get()

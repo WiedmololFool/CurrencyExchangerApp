@@ -22,6 +22,10 @@ class UserBalanceRepository(
         )
     )
 
+    fun getUserProfile(): StateFlow<UserProfile> {
+        return userProfile.asStateFlow()
+    }
+
     private suspend fun fetchAllCurrencies(): List<Currency> {
         return currencyDataSource.getAllCurrencies()
     }
@@ -79,8 +83,46 @@ class UserBalanceRepository(
         }
     }
 
-    fun getUserProfile(): StateFlow<UserProfile> {
-        return userProfile.asStateFlow()
+
+    fun convertBalance(
+        soughtBalance: Balance,
+        boughtBalance: Balance
+    ): Boolean {
+        val currentUserProfile = userProfile.value
+        val convertedBalance = currentUserProfile.balances.find {
+            it.currency.symbol == soughtBalance.currency.symbol
+        }
+        val moneyWithCommission =
+            convertedBalance?.value
+                ?.minus(soughtBalance.value)
+                ?.minus(currentUserProfile.commissionFee * soughtBalance.value)
+        if (moneyWithCommission != null) {
+            if (moneyWithCommission < 0) throw Exception("Balance cannot be smaller than 0 after conversion, please provide another values")
+            val updatedUserBalances = currentUserProfile.balances.map { balance ->
+                when (balance.currency.symbol) {
+                    soughtBalance.currency.symbol -> {
+                        balance.copy(value = moneyWithCommission)
+                    }
+                    boughtBalance.currency.symbol -> {
+                        balance.copy(value = balance.value + boughtBalance.value)
+                    }
+                    else -> {
+                        balance
+                    }
+                }
+            }
+            val updatedCurrencyExchangeNumber = currentUserProfile.currencyExchangesNumber + 1
+            val updatedUserProfile = UserProfile(
+                balances = updatedUserBalances,
+                currencyExchangesNumber = updatedCurrencyExchangeNumber,
+                commissionFee = if (updatedCurrencyExchangeNumber < 4) 0.0 else 0.7
+            )
+            userProfile.value = updatedUserProfile
+            userProfileStorage.save(updatedUserProfile)
+            return true
+        } else {
+            return false
+        }
     }
 
 //    private suspend fun convertCurrency(

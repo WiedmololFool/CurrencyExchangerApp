@@ -8,7 +8,7 @@ interface CurrencyDataSource {
     suspend fun getAllCurrencies(): List<Currency>
 
     suspend fun convertCurrency(
-        amount: Double,
+        amount: String,
         from: Currency,
         to: Currency
     ): Balance
