@@ -139,6 +139,7 @@ class MainViewModel(
                 onSuccess = { isConverted ->
                     log("Currency successfully converted $isConverted")
                     showCurrencyConvertedDialog(isConverted)
+                    viewState = viewState.copy(input = viewState.input.copy(amount = ""))
                 }
                 onError = { error ->
                     viewState = viewState.copy(error = error)
