@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity() {
                                     "to ${convertedInputValue.toMoneyFormat()} ${input.boughtCurrency?.symbol}." +
                                     " Commission Fee - ${userProfile?.commissionFee?.toMoneyFormat()} ${input.soughtCurrency?.symbol}.",
                             title = getString(R.string.currency_converted),
-                            onDismiss = { viewModel.showCurrencyConvertedDialog(show = false) },
+                            onDismiss = viewModel::onConvertedDialogShown,
                             closeText = stringResource(R.string.done)
                         )
                         Dialog(

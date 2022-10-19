@@ -139,7 +139,6 @@ class MainViewModel(
                 onSuccess = { isConverted ->
                     log("Currency successfully converted $isConverted")
                     showCurrencyConvertedDialog(isConverted)
-                    viewState = viewState.copy(input = viewState.input.copy(amount = ""))
                 }
                 onError = { error ->
                     viewState = viewState.copy(error = error)
@@ -170,7 +169,14 @@ class MainViewModel(
         }
     }
 
-    fun showCurrencyConvertedDialog(show: Boolean) {
+    fun onConvertedDialogShown() {
+        viewModelScope.launch {
+            viewState = viewState.copy(input = viewState.input.copy(amount = ""))
+            showCurrencyConvertedDialog(show = false)
+        }
+    }
+
+    private fun showCurrencyConvertedDialog(show: Boolean) {
         viewState = viewState.copy(showCurrencyConvertedDialog = show)
     }
 
