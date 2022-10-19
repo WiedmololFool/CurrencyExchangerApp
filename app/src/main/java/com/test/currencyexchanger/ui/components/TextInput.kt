@@ -68,9 +68,9 @@ fun TextInput(
         disabledLabelColor = TextSecondary.copy(alpha = 0.5f),
     ),
     borderColors: BorderColors? = BorderDefaults.borderColors(),
-    contentPadding: PaddingValues = PaddingValues(horizontal = 21.dp, vertical = 23.dp),
+    contentPadding: PaddingValues = PaddingValues(horizontal = 10.dp, vertical = 23.dp),
 //    minWidth: Dp = TextFieldDefaults.MinWidth,
-    minWidth: Dp = 20.dp,
+    minWidth: Dp = 140.dp,
     minHeight: Dp = TextFieldDefaults.MinHeight,
 ) {
     val borderModifier = borderColors?.let { nonNullable ->
@@ -103,10 +103,11 @@ fun TextInput(
         modifier = modifier
             .background(colors.backgroundColor(enabled).value, shape)
             .indicatorLine(enabled, isError, interactionSource, colors)
-            .defaultMinSize(
-                minWidth = minWidth,
-                minHeight = minHeight
-            ),
+//            .defaultMinSize(
+//                minWidth = minWidth,
+//                minHeight = minHeight
+//            )
+            .width(minWidth),
 //            .then(other = borderModifier),
         onValueChange = { newValue -> onValueChange(newValue.ofMaxLength(maxLength = maxLength)) },
         enabled = enabled,

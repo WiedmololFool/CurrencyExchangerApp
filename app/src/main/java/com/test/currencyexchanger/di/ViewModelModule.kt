@@ -14,7 +14,8 @@ val viewModelModule = module {
             subscribeOnUserProfileUseCase = get(),
             convertCurrencyUseCase = get(),
             convertBalanceUseCase = get(),
-            coroutineContext = get()
+            coroutineContext = get(),
+            validateExchangeInputUseCase = get()
         )
     }
 

@@ -5,9 +5,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.test.currencyexchanger.R
 import com.test.currencyexchanger.ui.theme.CurrencyExchangerTheme
 
 @Composable
@@ -16,6 +14,7 @@ fun Dialog(
     title: String,
     text: String,
     onDismiss: () -> Unit,
+    closeText: String
 ) {
     if (!visible) return
 
@@ -23,7 +22,7 @@ fun Dialog(
         backgroundColor = MaterialTheme.colors.background,
         onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text(text = stringResource(R.string.close)) }
+            TextButton(onClick = onDismiss) { Text(text = closeText) }
         },
         title = { Text(text = title) },
         text = { Text(text = text) },
@@ -40,6 +39,7 @@ fun ErrorDialogPreview() {
             text = "Some error",
             title = "Error",
             onDismiss = {},
+            closeText = "Close"
         )
     }
 }

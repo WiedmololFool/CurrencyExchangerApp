@@ -115,7 +115,7 @@ class UserBalanceRepository(
             val updatedUserProfile = UserProfile(
                 balances = updatedUserBalances,
                 currencyExchangesNumber = updatedCurrencyExchangeNumber,
-                commissionFee = if (updatedCurrencyExchangeNumber < 4) 0.0 else 0.7
+                commissionFee = if (updatedCurrencyExchangeNumber < 6) 0.0 else 0.7
             )
             userProfile.value = updatedUserProfile
             userProfileStorage.save(updatedUserProfile)
@@ -124,18 +124,5 @@ class UserBalanceRepository(
             return false
         }
     }
-
-//    private suspend fun convertCurrency(
-//        amount: Double,
-//        from: Currency,
-//        to: Currency
-//    ): Balance {
-//        return currencyDataSource.convertCurrency(
-//            amount = amount,
-//            from = from,
-//            to = to
-//        )
-//    }
-
 
 }

@@ -7,8 +7,12 @@ import com.test.currencyexchanger.data.remote.EndPoints
 import com.test.currencyexchanger.data.remote.CurrencyDataSourceImpl
 import com.test.currencyexchanger.data.remote.CurrencyDataSource
 import com.test.currencyexchanger.data.repository.UserBalanceRepository
+import com.test.currencyexchanger.data.validation.CurrencyExchangeInputValidator
+import com.test.currencyexchanger.domain.model.ExchangeInput
+import com.test.currencyexchanger.domain.validation.Validator
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -57,5 +61,9 @@ val dataModule = module {
             userProfileStorage = get(),
             currencyDataSource = get()
         )
+    }
+
+    single<Validator<ExchangeInput>>(named<CurrencyExchangeInputValidator>()) {
+        CurrencyExchangeInputValidator()
     }
 }

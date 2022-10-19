@@ -8,11 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.test.currencyexchanger.domain.model.Balance
 import com.test.currencyexchanger.domain.model.Currency
 import com.test.currencyexchanger.domain.model.ExchangeInput
-import com.test.currencyexchanger.domain.usecase.ConvertBalanceUseCase
-import com.test.currencyexchanger.domain.usecase.ConvertCurrencyUseCase
-import com.test.currencyexchanger.domain.usecase.SubscribeOnUserProfileUseCase
-import com.test.currencyexchanger.domain.usecase.LoadUserProfileUseCase
+import com.test.currencyexchanger.domain.usecase.*
 import com.test.currencyexchanger.utils.Utility.log
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -21,6 +19,7 @@ class MainViewModel(
     private val subscribeOnUserProfileUseCase: SubscribeOnUserProfileUseCase,
     private val convertCurrencyUseCase: ConvertCurrencyUseCase,
     private val convertBalanceUseCase: ConvertBalanceUseCase,
+    private val validateExchangeInputUseCase: ValidateExchangeInputUseCase,
     private val coroutineContext: CoroutineContext,
 ) : ViewModel() {
 
@@ -36,13 +35,23 @@ class MainViewModel(
 
     init {
         subscribeOnProfile()
+        viewModelScope.launch(coroutineContext) {
+            while(true){
+                with (viewState.input){
+                    if(amount != null && soughtCurrency !=null && boughtCurrency != null){
+                        delay(15000L) //  15 seconds because of small amounts of queries in API subscribe plan
+                        convertCurrency()
+                    }
+                }
+            }
+        }
     }
 
     fun loadUserProfile() {
         viewModelScope.launch(coroutineContext) {
             loadUserProfileUseCase.execute(LoadUserProfileUseCase.Param()) {
                 onStart = {
-                    viewState = viewState.copy(showProgress = true)
+                    viewState = viewState.copy(showScreenLoadingProgress = true)
                     viewState = viewState.copy(userProfileIsLoaded = false)
                 }
                 onSuccess = { isLoaded ->
@@ -52,42 +61,27 @@ class MainViewModel(
                     viewState = viewState.copy(error = error)
                 }
                 onTerminate = {
-                    viewState = viewState.copy(showProgress = false)
+                    viewState = viewState.copy(showScreenLoadingProgress = false)
                 }
             }
         }
     }
 
-    fun subscribeOnProfile() {
+    private fun subscribeOnProfile() {
         viewModelScope.launch {
             subscribeOnUserProfileUseCase.execute(SubscribeOnUserProfileUseCase.Param())
                 .collect { userProfile ->
                     log("COLLECTED USER PROFILE ${userProfile.commissionFee} ${userProfile.currencyExchangesNumber}")
                     viewState = viewState.copy(userProfile = userProfile)
-//                    log(
-//                        "userProfile: ${
-//                            userProfile.balances.first { it.currency.symbol == "EUR" }
-//                        } ${userProfile.commissionFee} ${userProfile.currencyExchangesNumber}"
-//                    )
                     //todo add flag to viewState which will display that userProfile succesfully loaded instead of list check
                     if (userProfile.balances.isNotEmpty()) {
-////                    if (viewState.userProfileIsLoaded) {
-//                        val soughtCurrency =
-//                            userProfile.balances.first { it.currency.symbol == "EUR" }.currency
-//                        val boughtCurrency =
-//                            userProfile.balances.first { it.currency.symbol == "USD" }.currency
-//                        createExchangeInput(
-//                            amount = 100.0,
-//                            soughtCurrency = soughtCurrency,
-//                            boughtCurrency = boughtCurrency
-//                        )
                         convertCurrency()
                     }
                 }
         }
     }
 
-    fun convertCurrency() {
+    private fun convertCurrency() {
         viewModelScope.launch(coroutineContext) {
             with(viewState) {
                 convertCurrencyUseCase.execute(
@@ -98,7 +92,7 @@ class MainViewModel(
                     )
                 ) {
                     onStart = {
-//                        viewState = viewState.copy(showProgress = true)
+                        viewState = viewState.copy(showConversionProgress = true)
                     }
                     onSuccess = { convertedBalance ->
                         viewState = viewState.copy(convertedInputValue = convertedBalance.value)
@@ -107,14 +101,14 @@ class MainViewModel(
                         viewState = viewState.copy(error = error)
                     }
                     onTerminate = {
-//                        viewState = viewState.copy(showProgress = false)
+                        viewState = viewState.copy(showConversionProgress = false)
                     }
                 }
             }
         }
     }
 
-    fun convertBalance() {
+   private fun internalConvertBalance() {
         viewModelScope.launch {
             convertBalanceUseCase.execute(
                 ConvertBalanceUseCase.Param(
@@ -129,7 +123,7 @@ class MainViewModel(
                 )
             ) {
                 onStart = {
-                    viewState = viewState.copy(showProgress = true)
+                    viewState = viewState.copy(showScreenLoadingProgress = true)
                 }
                 onSuccess = { isConverted ->
                     log("Currency successfully converted $isConverted")
@@ -139,7 +133,20 @@ class MainViewModel(
                     viewState = viewState.copy(error = error)
                 }
                 onTerminate = {
-                    viewState = viewState.copy(showProgress = false)
+                    viewState = viewState.copy(showScreenLoadingProgress = false)
+                }
+            }
+        }
+    }
+
+    fun convertBalance() {
+        viewModelScope.launch {
+            validateExchangeInputUseCase.execute(param = ValidateExchangeInputUseCase.Param(input = viewState.input)) {
+                onSuccess = {
+                   internalConvertBalance()
+                }
+                onError = { error ->
+                    viewState = viewState.copy(error = error)
                 }
             }
         }

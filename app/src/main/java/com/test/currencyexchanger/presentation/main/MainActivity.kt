@@ -48,7 +48,6 @@ class MainActivity : ComponentActivity() {
                             title = "Currency converter",
                         )
                     }
-//                    color = MaterialTheme.colors.background
                 ) { paddingValues ->
                     paddingValues
                     Content(
@@ -57,18 +56,22 @@ class MainActivity : ComponentActivity() {
                         onSubmit = viewModel::convertBalance,
                         onUpdateInput = viewModel::updateInput
                     )
-                    with(viewModel.viewState){
+                    with(viewModel.viewState) {
                         Dialog(
                             visible = showCurrencyConvertedDialog,
-                            text = "You converted ${input.amount} ${input.soughtCurrency} to $convertedInputValue ${input.boughtCurrency}",
+                            text = "You converted ${input.amount} ${input.soughtCurrency?.symbol} " +
+                                    "to ${convertedInputValue.round()} ${input.boughtCurrency?.symbol}." +
+                                    " Commission Fee - ${userProfile?.commissionFee?.round()} ${input.soughtCurrency?.symbol}.",
                             title = getString(R.string.currency_converted),
                             onDismiss = { viewModel.showCurrencyConvertedDialog(show = false) },
+                            closeText = stringResource(R.string.done)
                         )
                         Dialog(
                             visible = viewModel.viewState.error != null,
                             text = viewModel.viewState.error?.message.orEmpty(),
                             title = stringResource(id = R.string.error),
                             onDismiss = viewModel::onErrorShown,
+                            closeText = stringResource(R.string.close)
                         )
                     }
 
@@ -88,7 +91,7 @@ fun Content(
 ) {
     Column(modifier = modifier.padding(16.dp)) {
         with(viewState) {
-            if (showProgress) {
+            if (showScreenLoadingProgress) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .padding(all = 16.dp)
@@ -110,48 +113,21 @@ fun Content(
                             }
                         })
                 }
-//                Row {
-//                    Text(text = "Sale ${input.soughtCurrency?.symbol} : ")
-//                    BasicTextField(
-//                        modifier = Modifier.background(color = Color.White),
-//                        value = viewState.input.amount.orEmpty(),
-//                        onValueChange = { value ->
-//                            onUpdateInput(viewState.input.copy(amount = value))
-//                        },
-//                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-////                        decorationBox = { innerTextField ->
-////                            TextFieldDefaults.TextFieldDecorationBox(
-////
-////                                placeholder = { Text(text = "Input here")}
-////                            )
-////                        }
-//                    )
-//                    CurrencyPicker(
-//                        value = input.soughtCurrency,
-//                        onValueChange = { value ->
-//                            onUpdateInput(input.copy(soughtCurrency = value))
-//                        })
-//                }
-
-//                CurrencyPicker(
-//                    value = input.boughtCurrency,
-//                    onValueChange = { value ->
-//                        onUpdateInput(input.copy(boughtCurrency = value))
-//                    })
-//
-//                Text(text = "Buy ${input.boughtCurrency?.symbol} : $convertedInputValue")
                 CurrencyInput(
                     modifier = Modifier.fillMaxWidth(),
                     title = stringResource(R.string.sell),
                     content = {
                         TextInput(
+                            enabled = viewState.input.boughtCurrency != null && viewState.input.soughtCurrency != null,
                             value = input.amount.orEmpty(),
                             onValueChange = { value ->
                                 onUpdateInput(input.copy(amount = value))
                             },
                             placeholder = {
-                                Text(text = stringResource(R.string.enter_value))
-                            }
+                                val text = if (viewState.input.boughtCurrency != null && viewState.input.soughtCurrency != null) stringResource(R.string.enter_value) else "Please, select currencies first"
+                                Text(text = text)
+                            },
+                            singleLine = true
                         )
                     },
                     currencyPicker = {
@@ -176,12 +152,19 @@ fun Content(
                     modifier = Modifier.fillMaxWidth(),
                     title = stringResource(R.string.receive),
                     content = {
-                        Text(
-                            modifier = Modifier,
-                            text = "+ ${convertedInputValue.round()}",
-                            textAlign = TextAlign.End,
-                            color = MaterialTheme.colors.secondary
-                        )
+                        if(viewState.showConversionProgress){
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .padding(all = 16.dp)
+                            )
+                        } else {
+                            Text(
+                                modifier = Modifier,
+                                text = "+ ${convertedInputValue.round()}",
+                                textAlign = TextAlign.End,
+                                color = MaterialTheme.colors.secondary
+                            )
+                        }
                     },
                     currencyPicker = {
                         CurrencyPicker(
@@ -201,7 +184,6 @@ fun Content(
                         )
                     }
                 )
-//                Spacer(modifier = modifier.height(20.dp))
                 BrandButton(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)

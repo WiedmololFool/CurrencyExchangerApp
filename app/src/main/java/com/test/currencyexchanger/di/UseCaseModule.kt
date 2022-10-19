@@ -1,6 +1,8 @@
 package com.test.currencyexchanger.di
 
+import com.test.currencyexchanger.data.validation.CurrencyExchangeInputValidator
 import com.test.currencyexchanger.domain.usecase.*
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -41,6 +43,14 @@ val useCaseModule = module {
             coroutineContext = get(),
             errorHandler = get(),
             repository = get()
+        )
+    }
+
+    single {
+        ValidateExchangeInputUseCase(
+            coroutineContext = get(),
+            errorHandler = get(),
+            validator = get(named<CurrencyExchangeInputValidator>())
         )
     }
 }

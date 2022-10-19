@@ -36,7 +36,8 @@ fun CurrencyPicker(
             modifier = Modifier
 //                .weight(weight = 1f)
 //                .fillMaxHeight()
-                .width(100.dp),
+//                .width(300.dp)
+                .width(IntrinsicSize.Min),
             selectedItem = value,
             items = currencies.toTypedArray(),
             placeholder = { Text(text = stringResource(R.string.select)) },
@@ -70,19 +71,6 @@ fun CurrencyPicker(
                 overflow = TextOverflow.Ellipsis,
             )
         }
-//        Spacer(modifier = Modifier.width(width = 8.dp))
-//        IconTextButton(
-//            text = {
-//                Text(text = stringResource(id = R.string.scan_new))
-//            },
-//            icon = {
-//                Icon(
-//                    painter = painterResource(id = R.drawable.ic_round_qr_code_24),
-//                    contentDescription = stringResource(id = R.string.scan_new),
-//                )
-//            },
-//            onClick = onScanNew,
-//        )
     }
 
     error?.run {
