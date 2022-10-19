@@ -116,7 +116,7 @@ fun <T> SelectDropDown(
     ) {
         CompositionLocalProvider(LocalContentAlpha provides contentAlpha) {
             Row(
-                modifier = Modifier.padding(all = 21.dp),
+                modifier = Modifier.padding(vertical = 21.dp, horizontal = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {

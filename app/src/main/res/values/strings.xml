@@ -10,4 +10,6 @@
     <string name="submit">Submit</string>
     <string name="currency_converted">Currency converted</string>
     <string name="done">Done</string>
+    <string name="select_currencies_first">Please, select currencies first</string>
+    <string name="main_screen_title">Currency converter</string>
 </resources>

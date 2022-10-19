@@ -68,7 +68,7 @@ fun TextInput(
         disabledLabelColor = TextSecondary.copy(alpha = 0.5f),
     ),
     borderColors: BorderColors? = BorderDefaults.borderColors(),
-    contentPadding: PaddingValues = PaddingValues(horizontal = 10.dp, vertical = 23.dp),
+    contentPadding: PaddingValues = PaddingValues(horizontal = 0.dp, vertical = 23.dp),
 //    minWidth: Dp = TextFieldDefaults.MinWidth,
     minWidth: Dp = 140.dp,
     minHeight: Dp = TextFieldDefaults.MinHeight,

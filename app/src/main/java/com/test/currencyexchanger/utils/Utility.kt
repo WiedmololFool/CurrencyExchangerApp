@@ -20,19 +20,6 @@ import kotlin.math.roundToInt
 
 object Utility {
 
-    //hide keyboard
-    fun hideKeyboard(activity: Activity) {
-        val imm: InputMethodManager =
-            activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        //Find the currently focused view, so we can grab the correct window token from it.
-        var view: View? = activity.currentFocus
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
-        if (view == null) {
-            view = View(activity)
-        }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
-    }
-
     //check if network is connected
     fun isNetworkAvailable(context: Context?): Boolean {
         if (context == null) return false
@@ -63,15 +50,6 @@ object Utility {
         return false
     }
 
-    fun makeStatusBarTransparent(activity: Activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val decor = activity.window.decorView
-            decor.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            val w = activity.window
-            w.statusBarColor = Color.TRANSPARENT
-        }
-    }
-
     fun log(message: String) {
         Log.e("MY_TAG", message)
     }
@@ -83,5 +61,7 @@ object Utility {
     fun Double.round(): Double {
         return ((this * 100.0).roundToInt() / 100.0)
     }
+
+
 
 }
