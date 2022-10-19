@@ -29,7 +29,7 @@ import com.test.currencyexchanger.ui.components.TextInput
 import com.test.currencyexchanger.ui.components.TopBar
 import com.test.currencyexchanger.ui.theme.CurrencyExchangerTheme
 import com.test.currencyexchanger.utils.Utility
-import com.test.currencyexchanger.utils.Utility.round
+import com.test.currencyexchanger.utils.Utility.toMoneyFormat
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
@@ -62,8 +62,8 @@ class MainActivity : ComponentActivity() {
                         Dialog(
                             visible = showCurrencyConvertedDialog,
                             text = "You converted ${input.amount} ${input.soughtCurrency?.symbol} " +
-                                    "to ${convertedInputValue.round()} ${input.boughtCurrency?.symbol}." +
-                                    " Commission Fee - ${userProfile?.commissionFee?.round()} ${input.soughtCurrency?.symbol}.",
+                                    "to ${convertedInputValue.toMoneyFormat()} ${input.boughtCurrency?.symbol}." +
+                                    " Commission Fee - ${userProfile?.commissionFee?.toMoneyFormat()} ${input.soughtCurrency?.symbol}.",
                             title = getString(R.string.currency_converted),
                             onDismiss = { viewModel.showCurrencyConvertedDialog(show = false) },
                             closeText = stringResource(R.string.done)
@@ -100,9 +100,14 @@ fun Content(
                         .align(Alignment.CenterHorizontally)
                 )
             } else {
+                Text(
+                    modifier = Modifier.padding(vertical = 10.dp),
+                    text = stringResource(R.string.my_balances).uppercase(),
+                    style = MaterialTheme.typography.caption
+                )
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(all = 16.dp),
+                    contentPadding = PaddingValues(vertical = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(space = 26.dp),
                 ) {
                     items(
@@ -111,23 +116,32 @@ fun Content(
                             CompositionLocalProvider(
                                 LocalTextStyle provides MaterialTheme.typography.h1,
                             ) {
-                                Text(text = "${balance.value.round()} ${balance.currency.symbol}")
+                                Text(text = "${balance.value.toMoneyFormat()} ${balance.currency.symbol}")
                             }
                         })
                 }
+                Text(
+                    modifier = Modifier.padding(top = 20.dp),
+                    text = stringResource(R.string.currency_exchange).uppercase(),
+                    style = MaterialTheme.typography.caption
+                )
                 CurrencyInput(
                     modifier = Modifier.fillMaxWidth(),
                     title = stringResource(R.string.sell),
                     content = {
                         TextInput(
                             enabled = viewState.input.boughtCurrency != null && viewState.input.soughtCurrency != null,
-                            value = input.amount.orEmpty(),
+                            value = input.amount.orEmpty()
+                            ,
                             onValueChange = { value ->
                                 onUpdateInput(input.copy(amount = value.filter { it.isDigit() || it == '.' }))
                             },
                             placeholder = {
-                                val text = if (viewState.input.boughtCurrency != null && viewState.input.soughtCurrency != null) stringResource(R.string.enter_value)
-                                else stringResource(R.string.select_currencies_first)
+                                val text =
+                                    if (viewState.input.boughtCurrency != null && viewState.input.soughtCurrency != null) stringResource(
+                                        R.string.enter_value
+                                    )
+                                    else stringResource(R.string.select_currencies_first)
                                 Text(text = text)
                             },
                             singleLine = true,
@@ -157,7 +171,7 @@ fun Content(
                     modifier = Modifier.fillMaxWidth(),
                     title = stringResource(R.string.receive),
                     content = {
-                        if(viewState.showConversionProgress){
+                        if (viewState.showConversionProgress) {
                             CircularProgressIndicator(
                                 modifier = Modifier
                                     .padding(all = 16.dp)
@@ -165,7 +179,7 @@ fun Content(
                         } else {
                             Text(
                                 modifier = Modifier,
-                                text = "+ ${convertedInputValue.round()}",
+                                text = "+ ${convertedInputValue.toMoneyFormat()}",
                                 textAlign = TextAlign.End,
                                 color = MaterialTheme.colors.secondary
                             )

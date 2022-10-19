@@ -1,4 +1,4 @@
-package com.trustthq.ui.design_system.border
+package com.test.currencyexchanger.ui.components.border
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState

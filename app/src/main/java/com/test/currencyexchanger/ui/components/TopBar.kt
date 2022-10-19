@@ -51,13 +51,7 @@ fun TopBar(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     onNavigateUp?.run {
-                        IconButton(onClick = this) {
-//                            Icon(
-//                                painter = painterResource(id = R.drawable.ic_arrow_back_new),
-//                                contentDescription = stringResource(id = R.string.content_description_navigate_back),
-//                                tint = Color.Unspecified
-//                            )
-                        }
+                        IconButton(onClick = this) {}
                     }
                 }
             }

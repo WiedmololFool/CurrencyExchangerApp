@@ -34,9 +34,6 @@ fun CurrencyPicker(
     ) {
         SelectDropDown(
             modifier = Modifier
-//                .weight(weight = 1f)
-//                .fillMaxHeight()
-//                .width(300.dp)
                 .width(IntrinsicSize.Min),
             selectedItem = value,
             items = currencies.toTypedArray(),

@@ -28,11 +28,10 @@ import androidx.compose.ui.unit.dp
 import com.test.currencyexchanger.ui.theme.ColorPalette
 import com.test.currencyexchanger.ui.theme.CurrencyExchangerTheme
 import com.test.currencyexchanger.ui.theme.TextPrimary
-import com.test.currencyexchanger.ui.theme.TextSecondary
-import com.trustthq.ui.design_system.border.BorderColors
-import com.trustthq.ui.design_system.border.BorderDefaults
-import com.trustthq.ui.design_system.border.animateBorderStrokeAsState
-import com.trustthq.ui.design_system.scroll.drawVerticalScrollbar
+import com.test.currencyexchanger.ui.components.border.BorderColors
+import com.test.currencyexchanger.ui.components.border.BorderDefaults
+import com.test.currencyexchanger.ui.components.border.animateBorderStrokeAsState
+import com.test.currencyexchanger.ui.components.scroll.drawVerticalScrollbar
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -109,7 +108,6 @@ fun <T> SelectDropDown(
         shape = shape,
         color = backgroundColor,
         contentColor = contentColor,
-//        border = borderStroke?.value,
         enabled = enabled,
         elevation = elevation,
         interactionSource = interactionSource,
@@ -221,7 +219,6 @@ private fun <T> DropDown(
             }
             var dropDownMenuHeightDp = 0.dp
             items.forEach {
-//                dropDownMenuHeightDp += 48.dp
                 dropDownMenuHeightDp += 73.dp
             }
             val lazyListScrollState = rememberLazyListState()

@@ -11,6 +11,9 @@ import com.test.currencyexchanger.domain.model.ExchangeInput
 import com.test.currencyexchanger.domain.usecase.*
 import com.test.currencyexchanger.utils.Utility.log
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -26,19 +29,28 @@ class MainViewModel(
     var viewState by mutableStateOf(value = MainViewState())
         private set
 
+    private val inputFlow = MutableSharedFlow<ExchangeInput>(extraBufferCapacity = 3)
+
     fun updateInput(input: ExchangeInput) {
         viewModelScope.launch {
-            viewState = viewState.copy(input = input)
-            convertCurrency()
+            inputFlow.emit(input)
         }
     }
 
     init {
         subscribeOnProfile()
+        viewModelScope.launch {
+            inputFlow
+                .distinctUntilChanged()
+                .collectLatest { input ->
+                    viewState = viewState.copy(input = input)
+                    convertCurrency()
+                }
+        }
         viewModelScope.launch(coroutineContext) {
-            while(true){
-                with (viewState.input){
-                    if(amount != null && soughtCurrency !=null && boughtCurrency != null){
+            while (true) {
+                with(viewState.input) {
+                    if (amount != null && soughtCurrency != null && boughtCurrency != null) {
                         delay(15000L) //  15 seconds because of small amounts of queries in API subscribe plan
                         convertCurrency()
                     }
@@ -73,7 +85,6 @@ class MainViewModel(
                 .collect { userProfile ->
                     log("COLLECTED USER PROFILE ${userProfile.commissionFee} ${userProfile.currencyExchangesNumber}")
                     viewState = viewState.copy(userProfile = userProfile)
-                    //todo add flag to viewState which will display that userProfile succesfully loaded instead of list check
                     if (userProfile.balances.isNotEmpty()) {
                         convertCurrency()
                     }
@@ -108,7 +119,7 @@ class MainViewModel(
         }
     }
 
-   private fun internalConvertBalance() {
+    private fun internalConvertBalance() {
         viewModelScope.launch {
             convertBalanceUseCase.execute(
                 ConvertBalanceUseCase.Param(
@@ -143,7 +154,7 @@ class MainViewModel(
         viewModelScope.launch {
             validateExchangeInputUseCase.execute(param = ValidateExchangeInputUseCase.Param(input = viewState.input)) {
                 onSuccess = {
-                   internalConvertBalance()
+                    internalConvertBalance()
                 }
                 onError = { error ->
                     viewState = viewState.copy(error = error)

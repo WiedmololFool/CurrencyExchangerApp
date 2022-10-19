@@ -26,9 +26,9 @@ import androidx.compose.ui.unit.dp
 import com.test.currencyexchanger.ui.theme.CurrencyExchangerTheme
 import com.test.currencyexchanger.ui.theme.TextPrimary
 import com.test.currencyexchanger.ui.theme.TextSecondary
-import com.trustthq.ui.design_system.border.BorderColors
-import com.trustthq.ui.design_system.border.BorderDefaults
-import com.trustthq.ui.design_system.border.animateBorderStrokeAsState
+import com.test.currencyexchanger.ui.components.border.BorderColors
+import com.test.currencyexchanger.ui.components.border.BorderDefaults
+import com.test.currencyexchanger.ui.components.border.animateBorderStrokeAsState
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -69,9 +69,7 @@ fun TextInput(
     ),
     borderColors: BorderColors? = BorderDefaults.borderColors(),
     contentPadding: PaddingValues = PaddingValues(horizontal = 0.dp, vertical = 23.dp),
-//    minWidth: Dp = TextFieldDefaults.MinWidth,
     minWidth: Dp = 140.dp,
-    minHeight: Dp = TextFieldDefaults.MinHeight,
 ) {
     val borderModifier = borderColors?.let { nonNullable ->
         Modifier.border(
@@ -103,12 +101,7 @@ fun TextInput(
         modifier = modifier
             .background(colors.backgroundColor(enabled).value, shape)
             .indicatorLine(enabled, isError, interactionSource, colors)
-//            .defaultMinSize(
-//                minWidth = minWidth,
-//                minHeight = minHeight
-//            )
             .width(minWidth),
-//            .then(other = borderModifier),
         onValueChange = { newValue -> onValueChange(newValue.ofMaxLength(maxLength = maxLength)) },
         enabled = enabled,
         readOnly = readOnly,
@@ -121,7 +114,6 @@ fun TextInput(
         singleLine = singleLine,
         maxLines = maxLines,
         decorationBox = @Composable { innerTextField ->
-            // places leading icon, text field with label and placeholder, trailing icon
             TextFieldDefaults.TextFieldDecorationBox(
                 value = value,
                 visualTransformation = visualTransformation,

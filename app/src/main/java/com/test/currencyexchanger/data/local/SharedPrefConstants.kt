@@ -1,6 +1,5 @@
 package com.test.currencyexchanger.data.local
 
-import com.test.currencyexchanger.domain.model.Balance
 
 object SharedPrefConstants {
 

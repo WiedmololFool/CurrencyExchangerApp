@@ -1,18 +1,14 @@
 package com.test.currencyexchanger.utils
 
-import android.app.Activity
 import android.content.Context
-import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import java.text.ParseException
-import java.text.SimpleDateFormat
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
 import java.util.*
-import kotlin.math.roundToInt
 
 /**
  * Utility classes for doing stuffs such as hiding keyboard, checking if network is available etc
@@ -20,7 +16,6 @@ import kotlin.math.roundToInt
 
 object Utility {
 
-    //check if network is connected
     fun isNetworkAvailable(context: Context?): Boolean {
         if (context == null) return false
         val connectivityManager =
@@ -58,10 +53,12 @@ object Utility {
         return this.toDoubleOrNull() != null
     }
 
-    fun Double.round(): Double {
-        return ((this * 100.0).roundToInt() / 100.0)
+    fun Double.toMoneyFormat(): String {
+        val formatter = NumberFormat.getCurrencyInstance(Locale.US) as DecimalFormat
+        val symbols: DecimalFormatSymbols = formatter.decimalFormatSymbols
+        symbols.currencySymbol = "" // Don't use null.
+        formatter.decimalFormatSymbols = symbols
+        return formatter.format(this)
     }
-
-
 
 }
